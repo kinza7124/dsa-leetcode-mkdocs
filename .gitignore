@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# MkDocs build output
+/site/
+
+# OS
+.DS_Store
+Thumbs.db
