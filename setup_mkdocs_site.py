@@ -223,18 +223,27 @@ INDEX_MD = dedent(
 )
 
 MKDOCS_YML = dedent(
-    """
-    site_name: DSA & LeetCode Prep Hub
-    site_description: Structured 45-day plan, notes, and solutions for DSA & LeetCode
-    site_url: https://your-username.github.io/your-repo
-    repo_url: https://github.com/your-username/your-repo
+        """
+        site_name: DSA & LeetCode Prep Hub
+        site_description: Structured 45-day plan, notes, and solutions for DSA & LeetCode
+        site_url: https://kinza7124.github.io/dsa-leetcode-mkdocs
+        repo_url: https://github.com/kinza7124/dsa-leetcode-mkdocs
 
-    theme:
-      name: material
-      palette:
-        - scheme: default
-          primary: blue
-          accent: indigo
+        theme:
+            name: material
+            palette:
+                - scheme: slate
+                    primary: blue
+                    accent: indigo
+                    toggle:
+                        icon: material/lightbulb
+                        name: Switch to light mode
+                - scheme: default
+                    primary: blue
+                    accent: indigo
+                    toggle:
+                        icon: material/weather-night
+                        name: Switch to dark mode
 
     nav:
       - Home: index.md
