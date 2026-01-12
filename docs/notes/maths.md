@@ -1,286 +1,452 @@
 # Mathematics Fundamentals for DSA
 
-A compact reference for math topics frequently used in Data Structures & Algorithms and common LeetCode problems.
+An **intuition-first** reference for core mathematics concepts used in **Data Structures & Algorithms** and **LeetCode-style problems**.
+This file focuses on **how and why things work**, not shortcuts or heavy optimizations.
 
 ---
 
-## 1. Divisors
+## 1. Divisors of a Number
 
-**Definition:** A divisor of a number $n$ is any integer $d$ such that $n \bmod d = 0$.
+### What is a divisor?
 
-**Examples:**
-- Divisors of 6: 1, 2, 3, 6
-- Divisors of 12: 1, 2, 3, 4, 6, 12
+A number `d` is a **divisor** of `n` if it divides `n` completely.
 
-**Intuition:** Every number can be expressed via its divisors. To list divisors efficiently, iterate up to $\sqrt{n}$ and pair $d$ with $n/d$.
+Mathematically:
 
-**Facts:**
-- If $n = p_1^{a_1} p_2^{a_2} \cdots p_k^{a_k}$, then the number of divisors is $(a_1+1)(a_2+1)\cdots(a_k+1)$.
-- Sum of divisors $\sigma(n) = \prod_i \frac{p_i^{a_i+1}-1}{p_i-1}$.
-
-**Code (list divisors):**
-```python
-import math
-
-def divisors(n):
-    ds = []
-    for d in range(1, int(math.isqrt(n)) + 1):
-        if n % d == 0:
-            ds.append(d)
-            if d * d != n:
-                ds.append(n // d)
-    return sorted(ds)
+```
+n % d == 0
 ```
 
-**LeetCode practice:**
-- The Kth Factor of n (1492): https://leetcode.com/problems/the-kth-factor-of-n/
-- Self Dividing Numbers (728): https://leetcode.com/problems/self-dividing-numbers/
+### Intuition
+
+Divisors always come in **pairs**.
+If `d` divides `n`, then `n / d` also divides `n`.
+
+Example for `n = 36`:
+
+* `1 × 36`
+* `2 × 18`
+* `3 × 12`
+* `4 × 9`
+* `6 × 6`
+
+Once `d > √n`, pairs start repeating.
+So we only check until `√n`.
+
+### Basic Algorithm (Intuitive)
+
+```cpp
+for (int i = 1; i * i <= N; i++) {
+    if (N % i == 0) {
+        // i is a divisor
+        // N / i is also a divisor
+    }
+}
+```
+
+### Applications
+
+* Counting divisors
+* Checking prime numbers
+* Factorization problems
 
 ---
 
 ## 2. Prime Numbers
 
-**Definition:** A prime is a natural number $>1$ with no positive divisors other than 1 and itself.
+### Definition
 
-**Intuition:** Primes are the building blocks of integers (Fundamental Theorem of Arithmetic).
+A **prime number** has **exactly two divisors**:
 
-**Algorithms:**
-- Trial division up to $\sqrt{n}$ for primality.
-- Sieve of Eratosthenes to mark all primes $\le N$ in $O(N\log\log N)$.
+* `1`
+* the number itself
 
-**Code (primality test):**
-```python
-import math
+Examples:
 
-def is_prime(n):
-    if n < 2:
-        return False
-    if n % 2 == 0:
-        return n == 2
-    r = int(math.isqrt(n))
-    for d in range(3, r + 1, 2):
-        if n % d == 0:
-            return False
-    return True
+* Prime: `2, 3, 5, 7, 11`
+* Not prime: `4 (1,2,4)`, `6 (1,2,3,6)`
+
+### Intuition
+
+If a number has **any divisor other than 1 and itself**, it is not prime.
+
+Because divisors come in pairs, we only need to check until `√n`.
+
+### Naive Prime Check (Understanding First)
+
+```cpp
+bool isPrime(int n) {
+    if (n < 2) return false;
+    int cnt = 0;
+    for (int i = 1; i * i <= n; i++) {
+        if (n % i == 0) {
+            cnt++;
+            if (i != n / i) cnt++;
+        }
+    }
+    return cnt == 2;
+}
 ```
-
-**LeetCode practice:**
-- Count Primes (204): https://leetcode.com/problems/count-primes/
-- Prime arrangements related: Power of Three (326): https://leetcode.com/problems/power-of-three/
 
 ---
 
 ## 3. Prime Factorization
 
-**Definition:** Break $n$ into primes multiplying to $n$.
+### What is it?
 
-**Examples:**
-- $12 = 2^2 \times 3^1$
-- $60 = 2^2 \times 3^1 \times 5^1$
+Breaking a number into **only prime numbers** whose product equals the number.
 
-**Algorithm:** Trial division with division while divisible; if remainder $>1$, it’s prime.
+Example:
 
-**Code:**
-```python
-import math
+```
+60 = 2 × 2 × 3 × 5
+```
 
-def prime_factors(n):
-    fs = []
-    d = 2
-    while d * d <= n:
-        while n % d == 0:
-            fs.append(d)
-            n //= d
-        d += 1
-    if n > 1:
-        fs.append(n)
-    return fs
+### Intuition
+
+* Try dividing by the smallest possible number
+* Keep dividing while divisible
+* Whatever remains at the end is prime
+
+### Basic Factorization Pattern
+
+```cpp
+for (int i = 2; i * i <= n; i++) {
+    while (n % i == 0) {
+        // i is a prime factor
+        n =n/i;
+    }
+}
+if (n > 1) {
+    // n itself is a prime factor
+}
 ```
 
 ---
 
 ## 4. Greatest Common Divisor (GCD)
 
-**Definition:** Largest integer dividing both $a$ and $b$.
+### Meaning
 
-**Algorithm:** Euclid’s algorithm: $\gcd(a,b)=\gcd(b, a\bmod b)$.
+The **largest number** that divides both `a` and `b`.
 
-**Code:**
-```python
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+Example:
+
+```
+gcd(12, 18) = 6
 ```
 
-**LeetCode practice:**
-- Greatest Common Divisor of Strings (1071): https://leetcode.com/problems/greatest-common-divisor-of-strings/
+### Euclid’s Algorithm – Intuition
+
+If `a` divides `b`, then:
+
+```
+gcd(a, b) = gcd(b, a % b)
+```
+
+We keep shrinking the problem until remainder becomes `0`.
+
+### Code
+
+```cpp
+int gcd(int a, int b) {
+    while (b>0 && a>0) {
+        if(a>b)
+        a = a % b;
+        
+        if(b>a)
+        b=b%a;
+    }
+    if(a==0)
+    return b;
+return a;
+}
+```
 
 ---
 
 ## 5. Least Common Multiple (LCM)
 
-**Definition:** Smallest number divisible by both $a$ and $b$.
+### Meaning
 
-**Formula:** $\operatorname{lcm}(a,b)=\frac{a\cdot b}{\gcd(a,b)}$.
+The **smallest number** divisible by both `a` and `b`.
 
-**Code:**
-```python
-def lcm(a, b):
-    g = gcd(a, b)
-    return a // g * b
+### Key Relation
+
+```
+LCM(a, b) = a×b/GCD(a, b) 
+```
+
+### Code
+
+```cpp
+int lcm(int a, int b) {
+    return (a / gcd(a, b)) * b;
+}
 ```
 
 ---
 
-## 6. Sum Formulas
+## 6. Important Sum Formulas
 
-- $1 + 2 + \cdots + n = \frac{n(n+1)}{2}$
-- $1^2 + 2^2 + \cdots + n^2 = \frac{n(n+1)(2n+1)}{6}$
-- $1^3 + 2^3 + \cdots + n^3 = \left(\frac{n(n+1)}{2}\right)^2$
+Used heavily in missing-number and counting problems.
 
-**LeetCode practice:**
-- Sum of Square Numbers (633): https://leetcode.com/problems/sum-of-square-numbers/
+* Sum of first `n` numbers:
 
----
+```
+n(n + 1) / 2
+```
 
-## 7. Missing Numbers
+* Sum of squares:
 
-**Problem:** Given numbers $1..n$ with some missing, find the missing values.
+```
+n(n + 1)(2n + 1) / 6
+```
 
-**Methods:**
-- Sum formula: missing $= \frac{n(n+1)}{2} - \sum\text{(array)}$.
-- XOR: XOR all $1..n$ and XOR with array; result is missing when exactly one missing.
+* Sum of cubes:
 
-**LeetCode practice:**
-- Missing Number (268): https://leetcode.com/problems/missing-number/
-- Find All Numbers Disappeared in an Array (448): https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/
-- Set Mismatch (645): https://leetcode.com/problems/set-mismatch/
+```
+(n(n + 1) / 2)^2
+```
 
 ---
 
-## 8. Digit Extraction
+## 7. Missing Number Problems
 
-**Techniques:**
-- Last digit: `n % 10`
-- Remove last: `n //= 10`
+### Problem Pattern
 
-**Applications:** palindrome check, sum of digits, happy numbers.
+Given numbers from `0` to `n` with **one missing**, find it.
+
+### Intuition
+
+We know what the sum *should* be.
+We subtract what we *actually* have.
+
+### Code
+
+```cpp
+int missingNumber(vector<int>& nums) {
+    int n = nums.size();
+    int expected = n * (n + 1) / 2;
+    int sum = 0;
+    for (int x : nums)
+        sum += x;
+    return expected - sum;
+}
+```
+
+---
+
+## 8. Digit Extraction (MOST IMPORTANT PATTERN)
+
+### Core Idea
+
+For any number `n`:
+
+* Last digit → `n % 10`
+* Remove digit → `n / 10`
+
+### Universal Digit Loop
+
+```cpp
+while (n > 0) {
+    int digit = n % 10;
+    n = n/10;
+}
+```
+
+This single loop powers:
+
+* Sum of digits
+* Reverse number
+* Palindrome
+* Armstrong
+* Happy number
 
 ---
 
 ## 9. Reverse a Number
 
-**Algorithm:**
-```python
-def reverse_number(n):
-    rev = 0
-    while n > 0:
-        digit = n % 10
-        rev = rev * 10 + digit
-        n //= 10
-    return rev
-```
+### Intuition
 
-**LeetCode practice:**
-- Reverse Integer (7): https://leetcode.com/problems/reverse-integer/
+Extract digits and rebuild the number from left to right.
 
----
-
-## 10. Palindrome Numbers
-
-**Definition:** Same forwards and backwards.
-
-**Check:** Reverse and compare.
-
-**LeetCode practice:**
-- Palindrome Number (9): https://leetcode.com/problems/palindrome-number/
-
----
-
-## 11. Armstrong Numbers
-
-**Definition:** Sum of digits^$k$ equals the number; $k=$ number of digits.
-
-**Example:** 153 $\to 1^3 + 5^3 + 3^3 = 153$.
-
-**Code:**
-```python
-def is_armstrong(n):
-    s = str(n)
-    k = len(s)
-    return sum(int(c) ** k for c in s) == n
+```cpp
+int reverse(int n) {
+    int rev = 0;
+    while (n > 0) {
+        int digit = n%10;
+        rev = rev * 10 + digit;
+        n = n/10;
+    }
+    return rev;
+}
 ```
 
 ---
 
-## 12. Happy Numbers
+## 10. Palindrome Number
 
-**Definition:** Replace number by sum of squares of digits until it becomes 1 (happy) or loops (not happy).
+### Idea
 
-**Tip:** Detect cycles using a set or Floyd’s cycle method.
+A number is palindrome if:
 
-**Code:**
-```python
-def is_happy(n):
-    seen = set()
-    def next_val(x):
-        return sum((int(c) ** 2) for c in str(x))
-    while n != 1 and n not in seen:
-        seen.add(n)
-        n = next_val(n)
-    return n == 1
+```
+original == reverse(original)
 ```
 
-**LeetCode practice:**
-- Happy Number (202): https://leetcode.com/problems/happy-number/
-
----
-
-## 13. Combinatorics Basics
-
-**Formulas:**
-- Permutation: $P(n,r) = \frac{n!}{(n-r)!}$
-- Combination: $C(n,r) = \frac{n!}{r!(n-r)!}$
-
-**LeetCode practice:**
-- Combinations (77): https://leetcode.com/problems/combinations/
-- Permutations (46): https://leetcode.com/problems/permutations/
-- Combination Sum (39): https://leetcode.com/problems/combination-sum/
-- Pascal’s Triangle (118): https://leetcode.com/problems/pascals-triangle/
-- Pascal’s Triangle II (119): https://leetcode.com/problems/pascals-triangle-ii/
-- Unique Paths (62): https://leetcode.com/problems/unique-paths/
-
----
-
-## 14. Sieve of Eratosthenes
-
-**Idea:** Generate primes $\le N$ efficiently by marking multiples starting at $i^2$ for each prime $i$.
-
-**Code:**
-```python
-def sieve(n):
-    is_prime = [True] * (n + 1)
-    is_prime[0:2] = [False, False]
-    p = 2
-    while p * p <= n:
-        if is_prime[p]:
-            for m in range(p * p, n + 1, p):
-                is_prime[m] = False
-        p += 1
-    return [i for i in range(2, n + 1) if is_prime[i]]
+```cpp
+bool isPalindrome(int n) {
+    if (n < 0) return false;
+    int original = n, rev = 0;
+    while (n > 0) {
+        int digit = n%10;
+        rev = rev * 10 + digit;
+        n = n/10;
+    }
+    return original == rev;
+}
 ```
 
-**LeetCode practice:**
-- Count Primes (204): https://leetcode.com/problems/count-primes/
+---
+
+## 11. Armstrong Number
+
+### Definition
+
+A number is Armstrong if:
+
+```
+(sum of each digit ^ number of digits) == number
+```
+
+### Intuition
+
+* First count digits
+* Then raise each digit to that power
+* Add and compare
+
+```cpp
+bool isArmstrong(int n) {
+    int temp = n, count = 0;
+    while (temp > 0) {
+        count++;
+        temp = temp/10;
+    }
+
+    int sum = 0;
+    temp = n;
+    while (temp > 0) {
+        int digit = temp % 10;
+        sum += pow(digit, count);
+        temp /= 10;
+    }
+    return sum == n;
+}
+```
 
 ---
 
-## Quick Tips / Patterns
+## 12. Happy Number
 
-- Loop to $\sqrt{n}$ for primality/factorization/divisors.
-- Use $\gcd/\operatorname{lcm}$ for array/multiple operations.
-- Digit extraction with `% 10` and `// 10` underpins many number problems.
-- Precompute primes/factorials for repeated queries.
-- Modular arithmetic ($a \bmod m$) is essential for large-number combinatorics.
-- Powers: Power of Two (231) — https://leetcode.com/problems/power-of-two/; Power of Three (326) — https://leetcode.com/problems/power-of-three/; Power of Four (342) — https://leetcode.com/problems/power-of-four/
+### Idea
+
+Repeatedly replace number with:
+
+```
+sum of squares of digits
+```
+
+If it becomes `1` → Happy
+If it repeats → Cycle → Not Happy
+
+### Why a set?
+
+To detect infinite loops.
+
+```cpp
+int extractDigits(int n) {
+    int sum = 0;
+    while (n > 0) {
+        int d = n % 10;
+        sum += d * d;
+        n = n/10;
+    }
+    return sum;
+}
+
+bool isHappy(int n) {
+    unordered_set<int> seen;
+    while (n != 1) {
+        if (seen.count(n)) return false;
+        seen.insert(n);
+        n = extractDigits(n);
+    }
+    return true;
+}
+```
+
+---
+
+## 13. Sieve of Eratosthenes
+
+### Intuition
+
+Instead of checking each number:
+
+* Assume all are prime
+* Remove multiples of each prime
+
+```cpp
+void sieve(int N) {
+    vector<bool> prime(N + 1, true);
+    prime[0] = prime[1] = false;
+
+    for (int i = 2; i * i <= N; i++) {
+        if (prime[i]) {
+            for (int j = i * i; j <= N; j += i)
+                prime[j] = false;
+        }
+    }
+}
+```
+
+---
+
+## 14. Arrange Coins (Binary Search Intuition)
+
+### Problem Insight
+
+To form `k` rows:
+
+```
+coins needed = k(k + 1) / 2
+```
+
+Find the **maximum k** such that this ≤ `n`.
+
+```cpp
+int arrangeCoins(int n) {
+    long long left = 0, right = n;
+    while (left <= right) {
+        long long mid = left + (right - left) / 2;
+        long long curr = mid * (mid + 1) / 2;
+        if (curr == n) return mid;
+        if (curr < n) left = mid + 1;
+        else right = mid - 1;
+    }
+    return right;
+}
+```
+
+---
+
+## 🔑 Final Patterns to Remember
+
+* `% 10` and `/ 10` unlock digit problems
+* Divisors always come in pairs
+* Loop until `√n`, not `n`
+* GCD + LCM appear everywhere
+* Mathematical formulas save loops
+
+Master these and **DSA math becomes easy** 🚀
